@@ -59,7 +59,7 @@ void sorting_arr(int check){
 				ip_arr[i] = ip_arr[j];
 				ip_arr[j] = tmp;
 			}
-			
+
 		}
 	}
 }
@@ -152,6 +152,15 @@ int main(int argc,char *argv[]){
 			pack_byte += header->caplen;
 			pack_cnt++;
 			const struct ether_header *ethernet = (struct ether_header *)content;
+			printf("Dest MAC: %s\n", ether_ntoa(&ethernet->ether_dhost));
+			printf("Source MAC: %s\n", ether_ntoa(&ethernet->ether_shost));
+			struct tm *ltime;
+			char timestr[30];
+			time_t local_tv_sec;
+			local_tv_sec = header->ts.tv_sec;
+			ltime = localtime(&local_tv_sec);
+			strftime(timestr, sizeof timestr, "%x-%H:%M:%S", ltime);
+			printf("Time: %s.%.6d\n", timestr, (int)header->ts.tv_usec);
 			if (ntohs (ethernet->ether_type) == ETHERTYPE_IP){
 				const struct iphdr *iph = (struct iphdr*)(content + sizeof(struct ethhdr));
 				if(iph->protocol == 6){
@@ -177,16 +186,18 @@ int main(int argc,char *argv[]){
 				else{
 					ip_arr[flag].cnt++;
 				}
-				printf("Dest MAC: %s\n", ether_ntoa(&ethernet->ether_dhost));
-				printf("Source MAC: %s\n", ether_ntoa(&ethernet->ether_shost));
-				struct tm *ltime;
-				char timestr[30];
-				time_t local_tv_sec;
-				local_tv_sec = header->ts.tv_sec;
-				ltime = localtime(&local_tv_sec);
-				strftime(timestr, sizeof timestr, "%x-%H:%M:%S", ltime);
+				/*
+				   printf("Dest MAC: %s\n", ether_ntoa(&ethernet->ether_dhost));
+				   printf("Source MAC: %s\n", ether_ntoa(&ethernet->ether_shost));
+				   struct tm *ltime;
+				   char timestr[30];
+				   time_t local_tv_sec;
+				   local_tv_sec = header->ts.tv_sec;
+				   ltime = localtime(&local_tv_sec);
+				   strftime(timestr, sizeof timestr, "%x-%H:%M:%S", ltime);
 
-				printf("Time: %s.%.6d\n", timestr, (int)header->ts.tv_usec);
+				   printf("Time: %s.%.6d\n", timestr, (int)header->ts.tv_usec);
+				 */
 				printf("Capture length: %d bytes\n", header->caplen);
 				printf("\n\n");	
 			}
